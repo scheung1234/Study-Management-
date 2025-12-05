@@ -6,9 +6,9 @@
     <title>ESF Student Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <!-- IndexedDB Wrapper for High Capacity Storage -->
+    <!-- Reliable Storage Engine -->
     <script src="https://cdn.jsdelivr.net/npm/idb-keyval@6/dist/umd.js"></script>
-    <!-- Chart.js for Performance Graphs -->
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
@@ -16,13 +16,11 @@
         
         body {
             font-family: 'Inter', sans-serif;
-            /* Lighter "Twilight" Slate Blue */
             background: radial-gradient(circle at top left, #475569, #334155); 
             color: #f1f5f9;
             min-height: 100vh;
         }
 
-        /* Professional Glass Effect */
         .glass {
             background: rgba(71, 85, 105, 0.65);
             backdrop-filter: blur(16px);
@@ -31,41 +29,24 @@
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
         }
 
-        .glass-panel { 
-            background: rgba(51, 65, 85, 0.5); 
-            border: 1px solid rgba(255, 255, 255, 0.1); 
-        }
-        
+        .glass-panel { background: rgba(51, 65, 85, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); }
         .glass-input {
-            background: rgba(30, 41, 59, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.2s ease;
-            color: white;
+            background: rgba(30, 41, 59, 0.4); border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.2s ease; color: white;
         }
-        
-        .glass-input:focus {
-            background: rgba(15, 23, 42, 0.6);
-            border-color: #38bdf8;
-            outline: none;
-        }
+        .glass-input:focus { background: rgba(15, 23, 42, 0.6); border-color: #38bdf8; outline: none; }
         
         ::placeholder { color: #cbd5e1; }
         ::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.3); border-radius: 4px; }
 
         .priority-high { border-left: 4px solid #ef4444; }
         .priority-medium { border-left: 4px solid #f59e0b; }
         .priority-low { border-left: 4px solid #10b981; }
-        .priority-done { border-left: 4px solid #10b981; opacity: 0.5; }
-
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.3); border-radius: 4px; }
         
-        [contenteditable]:hover { border-bottom-color: rgba(56, 189, 248, 0.5); }
-        [contenteditable]:focus { border-bottom-color: #38bdf8; outline: none; }
-        .font-mono { font-family: 'JetBrains Mono', monospace; }
-        
-        .task-done h4 { text-decoration: line-through; color: #94a3b8; }
+        .task-done h4, .task-done span { text-decoration: line-through; color: #94a3b8; }
         .task-done { background: rgba(30, 41, 59, 0.4); }
 
         /* Slider Styling */
@@ -75,9 +56,7 @@
             background: #f472b6; cursor: pointer; margin-top: -6px;
             box-shadow: 0 0 10px rgba(244, 114, 182, 0.5);
         }
-        input[type=range]::-webkit-slider-runnable-track {
-            width: 100%; height: 4px; cursor: pointer; background: #64748b; border-radius: 2px;
-        }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: #64748b; border-radius: 2px; }
 
         /* Animations */
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -85,28 +64,24 @@
         @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
         .shake { animation: shake 0.3s ease-in-out; }
         
-        /* Loading Overlay */
         #loading-overlay { transition: opacity 0.3s ease-out; }
+        
+        /* Button Fix */
+        .header-btn { position: relative; z-index: 50; cursor: pointer; }
     </style>
 </head>
 <body class="flex flex-col items-center p-4 selection:bg-sky-500 selection:text-white pb-20">
 
-    <!-- 1. LOGIN SCREEN -->
-    <div id="login-screen" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-slate-700 w-full h-full">
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-slate-700 w-full h-full">
         <div class="text-center mb-10 animate-enter">
             <h1 class="text-4xl font-bold text-white mb-2 tracking-tight">Who is learning?</h1>
             <p class="text-slate-300">Select your profile to load your dashboard.</p>
         </div>
-        
-        <div id="profile-grid" class="flex flex-wrap gap-6 justify-center max-w-4xl animate-enter" style="animation-delay: 0.1s;">
-            <!-- Profiles injected here -->
-        </div>
-
+        <div id="profile-grid" class="flex flex-wrap gap-6 justify-center max-w-4xl animate-enter" style="animation-delay: 0.1s;"></div>
         <button onclick="showCreateProfile()" class="mt-12 flex items-center gap-2 text-slate-300 hover:text-sky-300 transition-colors animate-enter" style="animation-delay: 0.2s;">
-            <i class="ph ph-plus-circle text-2xl"></i>
-            <span class="text-lg font-medium">Add Profile</span>
+            <i class="ph ph-plus-circle text-2xl"></i> <span class="text-lg font-medium">Add Profile</span>
         </button>
-
         <div class="absolute bottom-8 right-8">
              <button onclick="document.getElementById('restore-input-login').click()" class="text-slate-400 hover:text-white text-sm flex items-center gap-2 transition-colors">
                 <i class="ph ph-upload-simple"></i> Restore Backup
@@ -116,12 +91,10 @@
     </div>
     
     <!-- PIN ENTRY MODAL -->
-    <div id="pin-modal" class="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm hidden">
+    <div id="pin-modal" class="fixed inset-0 z-[110] flex items-center justify-center bg-black/80 backdrop-blur-sm hidden">
         <div class="glass bg-white rounded-2xl p-8 w-full max-w-sm text-center shadow-2xl relative">
             <button onclick="closePinModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white"><i class="ph ph-x text-xl"></i></button>
-            <div class="w-16 h-16 rounded-full bg-slate-700 mx-auto mb-4 flex items-center justify-center text-3xl text-white shadow-lg">
-                <i class="ph ph-lock-key"></i>
-            </div>
+            <div class="w-16 h-16 rounded-full bg-slate-700 mx-auto mb-4 flex items-center justify-center text-3xl text-white shadow-lg"><i class="ph ph-lock-key"></i></div>
             <h3 class="text-xl font-bold text-white mb-1">Enter PIN</h3>
             <p class="text-slate-400 text-sm mb-6" id="pin-modal-user">for User</p>
             <input type="password" id="pin-input" maxlength="4" class="w-32 text-center text-3xl tracking-[0.5em] bg-slate-800 border border-slate-600 rounded-lg py-3 text-white focus:border-sky-500 focus:ring-2 focus:ring-sky-500/50 outline-none transition-all font-mono placeholder-slate-600" placeholder="••••">
@@ -130,47 +103,42 @@
     </div>
 
     <!-- LOADING OVERLAY -->
-    <div id="loading-overlay" class="fixed inset-0 z-[40] flex flex-col items-center justify-center bg-slate-800 hidden">
+    <div id="loading-overlay" class="fixed inset-0 z-[90] flex flex-col items-center justify-center bg-slate-800 hidden">
         <i class="ph ph-spinner animate-spin text-5xl text-sky-400 mb-4"></i>
-        <h2 class="text-xl font-semibold text-white">Loading Data...</h2>
+        <h2 class="text-xl font-semibold text-white">Loading Database...</h2>
     </div>
 
-    <!-- 2. MAIN DASHBOARD -->
+    <!-- MAIN DASHBOARD -->
     <main id="dashboard-view" class="w-full max-w-6xl space-y-6 animate-fade-in relative hidden">
-        
-        <!-- HEADER SECTION -->
-        <header class="flex flex-col md:flex-row justify-between items-end mt-4 pb-4 border-b border-white/20">
+        <!-- HEADER -->
+        <header class="flex flex-col md:flex-row justify-between items-end mt-4 pb-4 border-b border-white/20 relative z-40">
             <div class="flex items-center gap-5 w-full md:w-auto">
                 <div class="relative group shrink-0">
                     <img id="profile-img" src="" class="w-20 h-20 rounded-full object-cover border-4 border-slate-500 shadow-2xl cursor-pointer transition-transform hover:scale-105">
                     <div class="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" onclick="document.getElementById('profile-upload-input').click()" title="Change Picture"><i class="ph ph-camera text-white text-2xl"></i></div>
                     <input type="file" id="profile-upload-input" class="hidden" accept="image/*" onchange="handleProfileUpload(this)">
                 </div>
-
                 <div>
                     <h1 class="text-4xl font-light tracking-tight text-white flex flex-col md:block">
-                        <span id="greeting-time" class="text-sky-300">Hello</span>, 
-                        <span id="user-name" contenteditable="true" class="font-semibold border-b-2 border-transparent transition-colors px-1 cursor-text hover:border-sky-400/50" spellcheck="false" onblur="saveSettings()">Student</span>
+                        <span id="greeting-time" class="text-sky-300">Hello</span>, <span id="user-name" contenteditable="true" class="font-semibold border-b-2 border-transparent transition-colors px-1 cursor-text hover:border-sky-400/50" spellcheck="false" onblur="saveSettings()">Student</span>
                     </h1>
                     <div class="mt-2 flex items-center gap-2 text-emerald-300 font-medium bg-emerald-900/40 px-3 py-1.5 rounded-lg border border-emerald-400/30 w-fit shadow-lg backdrop-blur-sm">
-                        <i class="ph ph-lightning text-lg"></i>
-                        <span id="daily-quote" class="italic text-lg">Loading vibes...</span>
+                        <i class="ph ph-lightning text-lg"></i><span id="daily-quote" class="italic text-lg">Loading vibes...</span>
                     </div>
                 </div>
             </div>
-
-            <div class="text-right mt-4 md:mt-0">
+            <div class="text-right mt-4 md:mt-0 relative z-50">
                 <p id="clock" class="text-2xl font-light text-white"></p>
                 <p id="date-display" class="text-sm text-slate-300 font-medium uppercase tracking-wider"></p>
                 <div class="flex items-center justify-end gap-2 mt-2">
                     <p id="last-saved" class="text-xs text-emerald-400/80 font-mono mr-2"></p>
-                    <button onclick="openSettingsModal()" class="bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white p-2 rounded-lg transition-colors" title="Settings & Backup"><i class="ph ph-gear text-lg"></i></button>
-                    <button onclick="logout()" class="text-xs bg-white/10 hover:bg-red-500/20 text-slate-300 hover:text-red-400 px-3 py-2 rounded-lg transition-colors font-bold border border-white/10 hover:border-red-500/30">Switch User</button>
+                    <button onclick="openSettingsModal()" class="header-btn bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white p-2 rounded-lg transition-colors" title="Settings & Backup"><i class="ph ph-gear text-lg"></i></button>
+                    <button onclick="logout()" class="header-btn text-xs bg-white/10 hover:bg-red-500/20 text-slate-300 hover:text-red-400 px-3 py-2 rounded-lg transition-colors font-bold border border-white/10 hover:border-red-500/30">Switch User</button>
                 </div>
             </div>
         </header>
 
-        <!-- FOCUS TIMERS -->
+        <!-- TIMERS -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
             <div class="glass p-4 rounded-xl flex items-center justify-between border-l-4 border-indigo-400">
                 <div class="flex items-center gap-4">
@@ -207,13 +175,8 @@
         <section class="glass rounded-2xl p-4 flex items-center gap-4 w-full">
             <div class="p-2 bg-emerald-500/20 rounded-lg text-emerald-400"><i class="ph ph-check-circle text-2xl"></i></div>
             <div class="flex-1">
-                <div class="flex justify-between text-xs uppercase font-bold tracking-wider mb-1">
-                    <span class="text-slate-300">Tasks Completed</span>
-                    <span id="progress-text" class="text-emerald-400">0%</span>
-                </div>
-                <div class="w-full bg-slate-700/50 rounded-full h-2.5 overflow-hidden">
-                    <div id="progress-bar" class="bg-emerald-500 h-2.5 rounded-full transition-all duration-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" style="width: 0%"></div>
-                </div>
+                <div class="flex justify-between text-xs uppercase font-bold tracking-wider mb-1"><span class="text-slate-300">Tasks Completed</span><span id="progress-text" class="text-emerald-400">0%</span></div>
+                <div class="w-full bg-slate-700/50 rounded-full h-2.5 overflow-hidden"><div id="progress-bar" class="bg-emerald-500 h-2.5 rounded-full transition-all duration-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" style="width: 0%"></div></div>
             </div>
         </section>
 
@@ -238,32 +201,23 @@
                 </section>
 
                 <section class="glass rounded-2xl p-5 flex flex-col h-40">
-                    <div class="flex justify-between items-center mb-2">
-                        <h2 class="text-lg font-semibold flex items-center gap-2 text-slate-200"><i class="ph ph-notebook text-purple-400"></i> Scratchpad</h2>
-                        <span class="text-xs text-slate-500" id="save-status">Auto-saving...</span>
-                    </div>
+                    <div class="flex justify-between items-center mb-2"><h2 class="text-lg font-semibold flex items-center gap-2 text-slate-200"><i class="ph ph-notebook text-purple-400"></i> Scratchpad</h2><span class="text-xs text-slate-500" id="save-status">Auto-saving...</span></div>
                     <textarea id="notepad" class="flex-1 w-full bg-transparent resize-none border-none focus:ring-0 text-slate-300 text-sm placeholder-slate-500 leading-relaxed" placeholder="Quick notes..."></textarea>
                 </section>
 
                 <!-- PERSONAL TASKS (ABOVE TUTOR) -->
                 <section class="glass rounded-2xl p-6 relative border-l-4 border-purple-400">
                     <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-xl font-semibold flex items-center gap-2 text-slate-200">
-                            <i class="ph ph-check-square text-purple-400"></i> Personal Tasks
-                        </h2>
+                        <h2 class="text-xl font-semibold flex items-center gap-2 text-slate-200"><i class="ph ph-check-square text-purple-400"></i> Personal Tasks</h2>
                     </div>
-                    
-                    <!-- Stacked Layout -->
+                    <!-- STACKED LAYOUT -->
                     <div class="flex flex-col gap-3 mb-4">
-                        <input type="text" id="personal-task-input" class="w-full glass-input rounded-lg p-3 text-white text-sm placeholder-slate-400 focus:border-purple-500 transition-colors" placeholder="What do you need to do? (e.g. Piano Practice)">
+                        <input type="text" id="personal-task-input" class="w-full glass-input rounded-lg p-3 text-white text-sm placeholder-slate-400 focus:border-purple-500 transition-colors" placeholder="What do you need to do?">
                         <div class="flex gap-2">
                             <input type="date" id="personal-task-date" class="flex-1 glass-input rounded-lg p-2.5 text-white text-sm [color-scheme:dark]">
-                            <button onclick="addPersonalTask()" class="bg-purple-600 hover:bg-purple-500 text-white px-6 rounded-lg transition-colors font-medium text-sm flex items-center gap-2">
-                                <i class="ph ph-plus"></i> Add
-                            </button>
+                            <button onclick="addPersonalTask()" class="bg-purple-600 hover:bg-purple-500 text-white px-6 rounded-lg transition-colors font-medium text-sm flex items-center gap-2"><i class="ph ph-plus"></i> Add</button>
                         </div>
                     </div>
-
                     <div id="personal-task-list" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
                 </section>
 
@@ -283,7 +237,7 @@
 
             <!-- RIGHT: Homework -->
             <div class="lg:col-span-2 space-y-6">
-                <!-- NEW: PERFORMANCE STATS SECTION (Updated Background) -->
+                <!-- PERFORMANCE STATS -->
                 <section class="glass rounded-2xl p-6 relative border-l-4 border-cyan-400">
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="text-xl font-semibold flex items-center gap-2 text-slate-200"><i class="ph ph-chart-line-up text-cyan-400"></i> Performance Stats</h2>
@@ -292,12 +246,12 @@
                             <button onclick="openAssessmentModal()" class="bg-cyan-600/20 hover:bg-cyan-600/40 text-cyan-300 text-sm px-3 py-1.5 rounded-lg transition-colors flex items-center gap-2"><i class="ph ph-plus"></i> Log Result</button>
                         </div>
                     </div>
-                    <!-- UPDATED: Light Grey Background for Chart Container -->
                     <div class="h-64 w-full bg-slate-200 rounded-xl p-2 relative">
                          <canvas id="performanceChart"></canvas>
                     </div>
                 </section>
 
+                <!-- HOMEWORK FORM -->
                 <section class="glass rounded-2xl p-6 transition-all duration-300" id="homework-form">
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="text-xl font-semibold flex items-center gap-2 text-slate-200"><i class="ph ph-student text-orange-400"></i> <span id="form-title">School New Assignment</span></h2>
@@ -305,7 +259,6 @@
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="col-span-1"><label class="text-xs text-slate-400 uppercase font-bold tracking-wider ml-1">Subject</label><input type="text" id="hw-subject" class="w-full glass-input rounded-lg p-2.5 text-white mt-1" placeholder="e.g. IB Math AA"></div>
-                        <!-- DATE ONLY -->
                         <div class="col-span-1"><label class="text-xs text-slate-400 uppercase font-bold tracking-wider ml-1">Due Date</label><input type="date" id="hw-date" class="w-full glass-input rounded-lg p-2.5 text-white mt-1 [color-scheme:dark]"></div>
                         <div class="col-span-1 md:col-span-2"><label class="text-xs text-slate-400 uppercase font-bold tracking-wider ml-1">Task Description</label><input type="text" id="hw-desc" class="w-full glass-input rounded-lg p-2.5 text-white mt-1" placeholder="e.g. Chapter 4 Calculus Problems 1-10"></div>
                         <div class="col-span-1"><label class="text-xs text-slate-400 uppercase font-bold tracking-wider ml-1">Priority</label><select id="hw-priority" class="w-full glass-input rounded-lg p-2.5 text-white mt-1 bg-slate-800"><option value="High">🔴 High Priority</option><option value="Medium" selected>🟡 Medium Priority</option><option value="Low">🟢 Low Priority</option></select></div>
@@ -340,7 +293,7 @@
     </main>
 
     <!-- MODALS -->
-    <div id="settings-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+    <div id="settings-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center z-[200] p-4">
         <div class="glass bg-slate-900 rounded-2xl p-6 w-full max-w-sm shadow-2xl border border-slate-700">
             <div class="flex justify-between items-center mb-6"><h3 class="text-xl font-semibold text-white flex items-center gap-2"><i class="ph ph-gear"></i> Settings</h3><button onclick="closeSettingsModal()" class="text-slate-400 hover:text-white"><i class="ph ph-x text-xl"></i></button></div>
             <div class="space-y-4">
@@ -430,7 +383,7 @@
         
         // --- GLOBALS ---
         let homework=[], tutorClasses=[], igcseData=[], exams=[], links=[], personalTasks=[], assessments=[];
-        let editingId = null; // Fixed global declaration
+        let editingId = null; 
         let timers={study:{},screen:{}};
         let performanceChart = null;
         let rewardSettings = { target: 90, bonus: 50 };
@@ -486,8 +439,7 @@
             if(links.length === 0) links=[{title:'Google Classroom',url:'https://classroom.google.com'},{title:'ManageBac',url:'https://www.managebac.com'}];
             ['study', 'screen'].forEach(async type => { const saved = await db.get(`${currentUser}_esf-timer-${type}`); if (saved) { timers[type] = saved; if (saved.isRunning) startTimerInterval(type); updateTimerDisplay(type); updateTimerUI(type, saved.isRunning); } else { timers[type] = { isRunning: false, startTime: null, elapsedBefore: 0 }; } });
             
-            renderAllTasks(); // Unified List
-            renderTutorSchedule(); renderIgcse(); renderExamCountdown(); renderLinks(); renderPersonalTasks(); renderPerformanceChart(); renderLastSaved(); setQuote();
+            renderAllTasks(); renderTutorSchedule(); renderIgcse(); renderExamCountdown(); renderLinks(); renderPersonalTasks(); renderPerformanceChart(); renderLastSaved(); setQuote();
         }
 
         // --- REWARDS SYSTEM ---
@@ -523,7 +475,7 @@
             div.classList.remove('hidden');
         }
 
-        // --- PERFORMANCE CHART (FIXED SORTING) ---
+        // --- PERFORMANCE CHART ---
         function openAssessmentModal() { document.getElementById('assessment-modal').classList.remove('hidden'); document.getElementById('assessment-modal').classList.add('flex'); }
         function closeAssessmentModal() { document.getElementById('assessment-modal').classList.add('hidden'); document.getElementById('assessment-modal').classList.remove('flex'); }
         async function saveAssessment() {
@@ -563,10 +515,7 @@
                 return {
                     label: subject,
                     data: subjectData.map(a => ({ x: a.date, y: (a.score / a.total) * 100 })),
-                    borderColor: color,
-                    backgroundColor: color,
-                    tension: 0.3,
-                    pointRadius: 4
+                    borderColor: color, backgroundColor: color, tension: 0.3, pointRadius: 4
                 };
             });
 
@@ -615,7 +564,7 @@
             });
         }
 
-        // --- HOMEWORK (FIXED: editingId defined globally) ---
+        // --- HOMEWORK (FIXED) ---
         async function addHomework(){ 
             const s=document.getElementById('hw-subject').value.trim();
             const d=document.getElementById('hw-desc').value.trim();
@@ -648,14 +597,13 @@
         function getTimeRemaining(d){const df=Date.parse(d)-Date.now();if(df<=0)return{t:"Due Today!",c:"text-red-600 font-bold"};const dy=Math.floor(df/86400000);return dy>0?{t:`Due ${dy} days`,c:"text-sky-600"}:{t:`Due Today`,c:"text-orange-400 font-bold"};}
         async function deleteHomework(id){if(confirm('Delete?')){homework=homework.filter(h=>h.id!==id);if(editingId===id)cancelEdit(); await db.set(k('homework'), homework); renderAllTasks(); updateLastSaved();}}
         async function toggleComplete(id) { 
-            // Check if in School Homework
+            // Check School Homework
             const hIndex = homework.findIndex(h => h.id === id); 
             if (hIndex !== -1) { 
                 homework[hIndex].completed = !homework[hIndex].completed; 
                 await db.set(k('homework'), homework); 
             } else {
-                // Check if in Tutor Homework logs
-                // Iterate all classes to find log
+                // Check Tutor Homework
                 let found = false;
                 for(let cls of tutorClasses) {
                     if(cls.logs) {
@@ -685,7 +633,6 @@
                 if(cls.logs) {
                     cls.logs.forEach(log => {
                         if(log.hasHomework) {
-                            // Generate stable ID if missing
                             if(!log.id) log.id = Date.now() + Math.random();
                             tutorTasks.push({
                                 id: log.id,
@@ -716,22 +663,12 @@
                 const tm = getTimeRemaining(x.dueDate); 
                 const pc = x.completed ? 'priority-done task-done' : `priority-${x.priority.toLowerCase()}`; 
                 let btns=''; 
-                
                 if(x.type === 'school') {
                      if(x.link)btns+=`<a href="${x.link.startsWith('http')?x.link:'https://'+x.link}" target="_blank" class="mr-2 inline-flex items-center gap-1 bg-sky-100 text-sky-600 text-xs px-2 py-1 rounded"><i class="ph ph-link"></i> Link</a>`; 
                      if(x.fileName&&x.fileData)btns+=`<a href="${x.fileData}" download="${x.fileName}" class="inline-flex items-center gap-1 bg-purple-100 text-purple-600 text-xs px-2 py-1 rounded"><i class="ph ph-file"></i> ${x.fileName}</a>`; 
                 }
-
                 const checkBtn = x.completed ? `<button onclick="toggleComplete(${x.id})" class="text-emerald-600 hover:text-emerald-700 p-1" title="Mark Incomplete"><i class="ph ph-check-circle-fill text-xl"></i></button>` : `<button onclick="toggleComplete(${x.id})" class="text-slate-500 hover:text-emerald-400 p-1" title="Mark Done"><i class="ph ph-circle text-xl"></i></button>`; 
-                
-                // Conditional Edit/Delete buttons (only for School tasks, Tutor tasks managed in Tutor modal)
-                let manageBtns = '';
-                if(x.type === 'school') {
-                    manageBtns = `<button onclick="editHomework(${x.id})" class="text-slate-400 hover:text-sky-600 p-1"><i class="ph ph-pencil-simple text-xl"></i></button><button onclick="deleteHomework(${x.id})" class="text-slate-500 hover:text-red-600 p-1"><i class="ph ph-trash text-xl"></i></button>`;
-                } else {
-                    manageBtns = `<span class="text-xs text-slate-400 italic">Manage in Tutor Schedule</span>`;
-                }
-
+                let manageBtns = x.type === 'school' ? `<button onclick="editHomework(${x.id})" class="text-slate-400 hover:text-sky-600 p-1"><i class="ph ph-pencil-simple text-xl"></i></button><button onclick="deleteHomework(${x.id})" class="text-slate-500 hover:text-red-600 p-1"><i class="ph ph-trash text-xl"></i></button>` : `<span class="text-xs text-slate-400 italic">Manage in Tutor Schedule</span>`;
                 const d=document.createElement('div');d.className=`glass-panel p-4 rounded-xl relative ${pc} hover:bg-slate-100 transition-colors animate-fade-in`; 
                 d.innerHTML=`<div class="flex justify-between items-start"><div><span class="text-xs font-bold bg-white/50 px-2 py-0.5 rounded text-slate-600 uppercase mr-2">${x.subject}</span><span class="text-xs ${x.priority==='High'?'text-red-600':'text-slate-500'}">${x.priority}</span><h4 class="text-lg font-medium text-slate-900 mt-1">${x.desc}</h4></div><div class="text-right"><div class="text-sm ${x.completed?'text-emerald-600':tm.c}"><i class="ph ph-clock"></i> ${x.completed ? 'Done' : tm.t}</div><div class="text-xs text-slate-500 mt-1">${new Date(x.dueDate).toLocaleDateString('en-GB')}</div></div></div>${x.remarks?`<div class="mt-2 text-xs text-slate-400 italic border-l-2 border-slate-300 pl-2">"${x.remarks}"</div>`:''}<div class="mt-2">${btns}</div><div class="absolute bottom-4 right-4 flex gap-2 items-center">${checkBtn}${manageBtns}</div>`; 
                 list.appendChild(d); 
@@ -801,8 +738,8 @@
         async function deleteLink(i){links.splice(i,1); await db.set(k('links'), links); renderLinks(); updateLastSaved();}
         function saveLinks() { localStorage.setItem(k('links'), JSON.stringify(links)); }
         function renderLinks(){ const c=document.getElementById('links-container');c.innerHTML=''; links.forEach((l,i)=>{ const d=document.createElement('div');d.className='group relative flex flex-col items-center justify-center p-3 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 cursor-pointer transition-all hover:scale-105'; d.onclick=(e)=>{if(!e.target.closest('.del-btn'))window.open(l.url,'_blank');}; d.innerHTML=`<button onclick="deleteLink(${i})" class="del-btn absolute top-1 right-1 opacity-0 group-hover:opacity-100 text-slate-400 hover:text-red-600"><i class="ph ph-x"></i></button><div class="w-8 h-8 rounded-full bg-sky-100 text-sky-600 flex items-center justify-center font-bold mb-1">${l.title[0]}</div><span class="text-xs text-slate-400 truncate w-full text-center">${l.title}</span>`; c.appendChild(d); }); }
-        function toggleTimer(type) { const t = timers[type]; if (!t.isRunning) { const otherType = type === 'study' ? 'screen' : 'study'; if (timers[otherType].isRunning) { const ot = timers[otherType]; ot.isRunning = false; ot.elapsedBefore += Date.now() - ot.startTime; ot.startTime = null; clearInterval(ot.interval); updateTimerUI(otherType, false); db.set(`${currentUser}_esf-timer-${otherType}`, ot); } } if (t.isRunning) { t.isRunning = false; t.elapsedBefore += Date.now() - t.startTime; t.startTime = null; clearInterval(t.interval); updateTimerUI(type, false); } else { t.isRunning = true; t.startTime = Date.now(); startTimerInterval(type); updateTimerUI(type, true); } db.set(`${currentUser}_esf-timer-${type}`, t); updateLastSaved(); }
-        function resetTimer(type) { const t = timers[type]; t.isRunning = false; t.startTime = null; t.elapsedBefore = 0; clearInterval(t.interval); updateTimerDisplay(type); updateTimerUI(type, false); db.set(`${currentUser}_esf-timer-${type}`, t); updateLastSaved(); }
+        function toggleTimer(type) { const t = timers[type]; if (!t.isRunning) { const otherType = type === 'study' ? 'screen' : 'study'; if (timers[otherType].isRunning) { const ot = timers[otherType]; ot.isRunning = false; ot.elapsedBefore += Date.now() - ot.startTime; ot.startTime = null; clearInterval(ot.interval); updateTimerUI(otherType, false); db.set(`${currentUser}_esf-timer-${otherType}`, ot); } } if (t.isRunning) { t.isRunning = false; t.elapsedBefore += Date.now() - t.startTime; t.startTime = null; clearInterval(t.interval); updateTimerUI(type, false); } else { t.isRunning = true; t.startTime = Date.now(); startTimerInterval(type); updateTimerUI(type, true); } saveTimer(type); }
+        function resetTimer(type) { const t = timers[type]; t.isRunning = false; t.startTime = null; t.elapsedBefore = 0; clearInterval(t.interval); updateTimerDisplay(type); updateTimerUI(type, false); saveTimer(type); }
         function startTimerInterval(type) { clearInterval(timers[type].interval); timers[type].interval = setInterval(() => updateTimerDisplay(type), 1000); updateTimerUI(type, true); }
         function updateTimerDisplay(type) { const t = timers[type]; let totalMs = t.elapsedBefore; if (t.isRunning) totalMs += (Date.now() - t.startTime); const totalSec = Math.floor(totalMs / 1000), h = Math.floor(totalSec / 3600).toString().padStart(2, '0'), m = Math.floor((totalSec % 3600) / 60).toString().padStart(2, '0'), s = (totalSec % 60).toString().padStart(2, '0'); document.getElementById(`${type}-display`).innerText = `${h}:${m}:${s}`; }
         function updateTimerUI(type, isRunning) { const btn = document.getElementById(`${type}-btn`), icon = document.getElementById(`${type}-icon`); if (isRunning) { btn.classList.replace(type === 'study' ? 'bg-indigo-600' : 'bg-pink-600', 'bg-red-500'); btn.classList.replace(type === 'study' ? 'hover:bg-indigo-700' : 'hover:bg-pink-700', 'hover:bg-red-600'); icon.classList.replace('ph-play-fill', 'ph-pause-fill'); } else { btn.classList.replace('bg-red-500', type === 'study' ? 'bg-indigo-600' : 'bg-pink-600'); btn.classList.replace('hover:bg-red-600', type === 'study' ? 'hover:bg-indigo-700' : 'hover:bg-pink-700'); icon.classList.replace('ph-pause-fill', 'ph-play-fill'); } }
@@ -822,7 +759,6 @@
         function closeIgcseTopicModal() { document.getElementById('igcse-topic-modal').classList.add('hidden'); document.getElementById('igcse-topic-modal').classList.remove('flex'); currentIgcseId = null; }
         async function saveIgcseTopics() { const txt = document.getElementById('igcse-topic-text').value; const idx = igcseData.findIndex(x => x.id === currentIgcseId); if(idx !== -1) { igcseData[idx].topics = txt; await db.set(k('igcse'), igcseData); updateLastSaved(); } closeIgcseTopicModal(); }
         
-        // Init
         init();
     </script>
 </body>
