@@ -49,7 +49,6 @@
         .task-done h4, .task-done span { text-decoration: line-through; color: #94a3b8; }
         .task-done { background: rgba(30, 41, 59, 0.4); }
 
-        /* Slider Styling */
         input[type=range] { -webkit-appearance: none; background: transparent; }
         input[type=range]::-webkit-slider-thumb {
             -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%;
@@ -58,22 +57,19 @@
         }
         input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: #64748b; border-radius: 2px; }
 
-        /* Animations */
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .animate-enter { animation: fadeIn 0.5s ease-out forwards; }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
         .shake { animation: shake 0.3s ease-in-out; }
         
         #loading-overlay { transition: opacity 0.3s ease-out; }
-        
-        /* Button Fix */
-        .header-btn { position: relative; z-index: 50; cursor: pointer; }
+        #settings-btn { z-index: 100; position: relative; }
     </style>
 </head>
 <body class="flex flex-col items-center p-4 selection:bg-sky-500 selection:text-white pb-20">
 
-    <!-- LOGIN SCREEN -->
-    <div id="login-screen" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-slate-700 w-full h-full">
+    <!-- 1. LOGIN SCREEN -->
+    <div id="login-screen" class="fixed inset-0 z-[150] flex flex-col items-center justify-center bg-slate-700 w-full h-full">
         <div class="text-center mb-10 animate-enter">
             <h1 class="text-4xl font-bold text-white mb-2 tracking-tight">Who is learning?</h1>
             <p class="text-slate-300">Select your profile to load your dashboard.</p>
@@ -90,8 +86,8 @@
         </div>
     </div>
     
-    <!-- PIN ENTRY MODAL -->
-    <div id="pin-modal" class="fixed inset-0 z-[110] flex items-center justify-center bg-black/80 backdrop-blur-sm hidden">
+    <!-- PIN MODAL -->
+    <div id="pin-modal" class="fixed inset-0 z-[160] flex items-center justify-center bg-black/80 backdrop-blur-sm hidden">
         <div class="glass bg-white rounded-2xl p-8 w-full max-w-sm text-center shadow-2xl relative">
             <button onclick="closePinModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white"><i class="ph ph-x text-xl"></i></button>
             <div class="w-16 h-16 rounded-full bg-slate-700 mx-auto mb-4 flex items-center justify-center text-3xl text-white shadow-lg"><i class="ph ph-lock-key"></i></div>
@@ -102,16 +98,9 @@
         </div>
     </div>
 
-    <!-- LOADING OVERLAY -->
-    <div id="loading-overlay" class="fixed inset-0 z-[90] flex flex-col items-center justify-center bg-slate-800 hidden">
-        <i class="ph ph-spinner animate-spin text-5xl text-sky-400 mb-4"></i>
-        <h2 class="text-xl font-semibold text-white">Loading Database...</h2>
-    </div>
-
-    <!-- MAIN DASHBOARD -->
+    <!-- DASHBOARD -->
     <main id="dashboard-view" class="w-full max-w-6xl space-y-6 animate-fade-in relative hidden">
-        <!-- HEADER -->
-        <header class="flex flex-col md:flex-row justify-between items-end mt-4 pb-4 border-b border-white/20 relative z-40">
+        <header class="flex flex-col md:flex-row justify-between items-end mt-4 pb-4 border-b border-white/20">
             <div class="flex items-center gap-5 w-full md:w-auto">
                 <div class="relative group shrink-0">
                     <img id="profile-img" src="" class="w-20 h-20 rounded-full object-cover border-4 border-slate-500 shadow-2xl cursor-pointer transition-transform hover:scale-105">
@@ -127,13 +116,13 @@
                     </div>
                 </div>
             </div>
-            <div class="text-right mt-4 md:mt-0 relative z-50">
+            <div class="text-right mt-4 md:mt-0 z-50 relative">
                 <p id="clock" class="text-2xl font-light text-white"></p>
                 <p id="date-display" class="text-sm text-slate-300 font-medium uppercase tracking-wider"></p>
                 <div class="flex items-center justify-end gap-2 mt-2">
                     <p id="last-saved" class="text-xs text-emerald-400/80 font-mono mr-2"></p>
-                    <button onclick="openSettingsModal()" class="header-btn bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white p-2 rounded-lg transition-colors" title="Settings & Backup"><i class="ph ph-gear text-lg"></i></button>
-                    <button onclick="logout()" class="header-btn text-xs bg-white/10 hover:bg-red-500/20 text-slate-300 hover:text-red-400 px-3 py-2 rounded-lg transition-colors font-bold border border-white/10 hover:border-red-500/30">Switch User</button>
+                    <button id="settings-btn" onclick="openSettingsModal()" class="bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white p-2 rounded-lg transition-colors" title="Settings & Backup"><i class="ph ph-gear text-lg"></i></button>
+                    <button onclick="logout()" class="text-xs bg-white/10 hover:bg-red-500/20 text-slate-300 hover:text-red-400 px-3 py-2 rounded-lg transition-colors font-bold border border-white/10 hover:border-red-500/30">Switch User</button>
                 </div>
             </div>
         </header>
@@ -205,12 +194,11 @@
                     <textarea id="notepad" class="flex-1 w-full bg-transparent resize-none border-none focus:ring-0 text-slate-300 text-sm placeholder-slate-500 leading-relaxed" placeholder="Quick notes..."></textarea>
                 </section>
 
-                <!-- PERSONAL TASKS (ABOVE TUTOR) -->
+                <!-- PERSONAL TASKS -->
                 <section class="glass rounded-2xl p-6 relative border-l-4 border-purple-400">
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="text-xl font-semibold flex items-center gap-2 text-slate-200"><i class="ph ph-check-square text-purple-400"></i> Personal Tasks</h2>
                     </div>
-                    <!-- STACKED LAYOUT -->
                     <div class="flex flex-col gap-3 mb-4">
                         <input type="text" id="personal-task-input" class="w-full glass-input rounded-lg p-3 text-white text-sm placeholder-slate-400 focus:border-purple-500 transition-colors" placeholder="What do you need to do?">
                         <div class="flex gap-2">
@@ -243,12 +231,11 @@
                         <h2 class="text-xl font-semibold flex items-center gap-2 text-slate-200"><i class="ph ph-chart-line-up text-cyan-400"></i> Performance Stats</h2>
                         <div class="flex gap-2">
                             <button onclick="openRewardsModal()" class="bg-yellow-600/20 hover:bg-yellow-600/40 text-yellow-300 text-sm px-3 py-1.5 rounded-lg transition-colors flex items-center gap-2"><i class="ph ph-gift"></i> Rewards</button>
-                            <button onclick="openAssessmentModal()" class="bg-cyan-600/20 hover:bg-cyan-600/40 text-cyan-300 text-sm px-3 py-1.5 rounded-lg transition-colors flex items-center gap-2"><i class="ph ph-plus"></i> Log Result</button>
+                            <button onclick="openAssessmentModal(null)" class="bg-cyan-600/20 hover:bg-cyan-600/40 text-cyan-300 text-sm px-3 py-1.5 rounded-lg transition-colors flex items-center gap-2"><i class="ph ph-plus"></i> Log Result</button>
+                            <button onclick="openAssessmentHistory()" class="bg-white/10 hover:bg-white/20 text-slate-300 text-sm px-3 py-1.5 rounded-lg transition-colors flex items-center gap-2"><i class="ph ph-list"></i> History</button>
                         </div>
                     </div>
-                    <div class="h-64 w-full bg-slate-200 rounded-xl p-2 relative">
-                         <canvas id="performanceChart"></canvas>
-                    </div>
+                    <div class="h-64 w-full bg-slate-200 rounded-xl p-2 relative"><canvas id="performanceChart"></canvas></div>
                 </section>
 
                 <!-- HOMEWORK FORM -->
@@ -286,32 +273,16 @@
 
                 <section class="space-y-4">
                     <div class="flex justify-between items-center px-2"><h3 class="text-lg font-semibold text-slate-300">Current Tasks</h3><span id="task-count" class="text-sm bg-slate-800 px-3 py-1 rounded-full text-slate-400">0 pending</span></div>
-                    <div id="homework-list" class="space-y-3 pb-10"></div>
+                    <!-- Grey Background Applied Here -->
+                    <div id="homework-list" class="space-y-3 pb-10 p-2 rounded-xl bg-slate-200/50"></div>
                 </section>
             </div>
         </div>
     </main>
 
     <!-- MODALS -->
-    <div id="settings-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center z-[200] p-4">
-        <div class="glass bg-slate-900 rounded-2xl p-6 w-full max-w-sm shadow-2xl border border-slate-700">
-            <div class="flex justify-between items-center mb-6"><h3 class="text-xl font-semibold text-white flex items-center gap-2"><i class="ph ph-gear"></i> Settings</h3><button onclick="closeSettingsModal()" class="text-slate-400 hover:text-white"><i class="ph ph-x text-xl"></i></button></div>
-            <div class="space-y-4">
-                <div class="p-4 bg-blue-900/30 rounded-xl border border-blue-700/50"><h4 class="font-bold text-blue-300 mb-1">Data Backup</h4><div class="flex gap-2"><button onclick="backupData()" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-2 transition-colors"><i class="ph ph-download-simple"></i> Export</button><button onclick="document.getElementById('restore-input').click()" class="flex-1 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-blue-300 py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-2 transition-colors"><i class="ph ph-upload-simple"></i> Import</button><input type="file" id="restore-input" class="hidden" accept=".json" onchange="restoreData(this)"></div></div>
-                <div class="p-4 bg-slate-800/50 rounded-xl border border-slate-600/50"><h4 class="font-bold text-slate-300 mb-1">Storage Usage</h4><div class="w-full bg-slate-700 rounded-full h-2.5 mb-1"><div id="storage-bar" class="bg-emerald-500 h-2.5 rounded-full" style="width: 0%"></div></div><p id="storage-text" class="text-xs text-slate-400 text-right">Calculating...</p></div>
-                <div class="p-4 bg-red-900/30 rounded-xl border border-red-700/50"><h4 class="font-bold text-red-300 mb-1">Danger Zone</h4><button onclick="deleteCurrentProfile()" class="w-full text-red-400 hover:bg-red-900/50 py-2 rounded-lg text-sm font-medium border border-red-500/30 transition-colors">Delete This Profile</button></div>
-            </div>
-        </div>
-    </div>
-
-    <div id="create-profile-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div class="glass bg-slate-900 rounded-2xl p-6 w-full max-w-sm shadow-2xl border border-slate-700">
-            <h3 class="text-xl font-semibold mb-4 text-white">Create New Profile</h3>
-            <div class="space-y-3"><input type="text" id="new-profile-name" class="w-full glass-input rounded-lg p-3 text-white mb-4" placeholder="Name (e.g. Alex)"><input type="text" id="new-profile-pin" maxlength="4" class="w-full glass-input rounded-lg p-3 text-white text-center tracking-widest" placeholder="Set 4-Digit PIN"></div>
-            <div class="flex gap-3 mt-6"><button onclick="closeCreateProfile()" class="flex-1 py-3 rounded-xl hover:bg-white/5 text-slate-300 transition-colors">Cancel</button><button onclick="createNewProfile()" class="flex-1 py-3 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-medium transition-colors">Create</button></div>
-        </div>
-    </div>
-
+    <div id="settings-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center z-[200] p-4"><div class="glass bg-slate-900 rounded-2xl p-6 w-full max-w-sm shadow-2xl border border-slate-700"><div class="flex justify-between items-center mb-6"><h3 class="text-xl font-semibold text-white flex items-center gap-2"><i class="ph ph-gear"></i> Settings</h3><button onclick="closeSettingsModal()" class="text-slate-400 hover:text-white"><i class="ph ph-x text-xl"></i></button></div><div class="space-y-4"><div class="p-4 bg-blue-900/30 rounded-xl border border-blue-700/50"><h4 class="font-bold text-blue-300 mb-1">Data Backup</h4><div class="flex gap-2"><button onclick="backupData()" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-2 transition-colors"><i class="ph ph-download-simple"></i> Save (Backup)</button><button onclick="document.getElementById('restore-input').click()" class="flex-1 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-blue-300 py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-2 transition-colors"><i class="ph ph-upload-simple"></i> Load (Sync)</button><input type="file" id="restore-input" class="hidden" accept=".json" onchange="restoreData(this)"></div></div><div class="p-4 bg-slate-800/50 rounded-xl border border-slate-600/50"><h4 class="font-bold text-slate-300 mb-1">Storage Usage</h4><div class="w-full bg-slate-700 rounded-full h-2.5 mb-1"><div id="storage-bar" class="bg-emerald-500 h-2.5 rounded-full" style="width: 0%"></div></div><p id="storage-text" class="text-xs text-slate-400 text-right">Calculating...</p></div><div class="p-4 bg-red-900/30 rounded-xl border border-red-700/50"><h4 class="font-bold text-red-300 mb-1">Danger Zone</h4><button onclick="deleteCurrentProfile()" class="w-full text-red-400 hover:bg-red-900/50 py-2 rounded-lg text-sm font-medium border border-red-500/30 transition-colors">Delete This Profile</button></div></div></div></div>
+    <div id="create-profile-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center z-50 p-4"><div class="glass bg-slate-900 rounded-2xl p-6 w-full max-w-sm shadow-2xl border border-slate-700"><h3 class="text-xl font-semibold mb-4 text-white">Create New Profile</h3><div class="space-y-3"><input type="text" id="new-profile-name" class="w-full glass-input rounded-lg p-3 text-white mb-4" placeholder="Name (e.g. Alex)"><input type="text" id="new-profile-pin" maxlength="4" class="w-full glass-input rounded-lg p-3 text-white text-center tracking-widest" placeholder="Set 4-Digit PIN"></div><div class="flex gap-3 mt-6"><button onclick="closeCreateProfile()" class="flex-1 py-3 rounded-xl hover:bg-white/5 text-slate-300 transition-colors">Cancel</button><button onclick="createNewProfile()" class="flex-1 py-3 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-medium transition-colors">Create</button></div></div></div>
     <div id="link-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center z-50 p-4"><div class="glass bg-slate-900 rounded-2xl p-6 w-full max-w-sm shadow-2xl border border-slate-700"><h3 class="text-xl font-semibold mb-4 text-white">Add Shortcut</h3><div class="space-y-4"><input type="text" id="link-title" class="w-full glass-input rounded-lg p-3 text-white" placeholder="Name"><input type="url" id="link-url" class="w-full glass-input rounded-lg p-3 text-white" placeholder="URL"></div><div class="flex gap-3 mt-6"><button onclick="toggleLinkModal()" class="flex-1 py-3 rounded-xl hover:bg-white/5 text-slate-300 transition-colors">Cancel</button><button onclick="addLink()" class="flex-1 py-3 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-medium transition-colors">Add</button></div></div></div>
     <div id="tutor-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center z-50 p-4"><div class="glass bg-slate-900 rounded-2xl p-6 w-full max-w-md shadow-2xl border border-slate-700"><h3 class="text-xl font-semibold mb-4 text-white flex items-center gap-2"><i class="ph ph-graduation-cap"></i> <span id="tutor-modal-title">Add Class</span></h3><p id="tutor-error-msg" class="text-red-400 text-xs mb-2 hidden"></p><div class="space-y-3"><div class="grid grid-cols-2 gap-3"><div><label class="text-xs text-slate-400 uppercase font-bold">Day</label><select id="t-day" class="w-full glass-input rounded-lg p-2.5 text-white mt-1 bg-slate-800"><option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option><option>Saturday</option><option>Sunday</option></select></div><div><label class="text-xs text-slate-400 uppercase font-bold">Time</label><input type="time" id="t-time" class="w-full glass-input rounded-lg p-2.5 text-white mt-1 [color-scheme:dark]"></div></div><div><label class="text-xs text-slate-400 uppercase font-bold">Subject</label><input type="text" id="t-subject" class="w-full glass-input rounded-lg p-2.5 text-white mt-1"></div><div><label class="text-xs text-slate-400 uppercase font-bold">Teacher</label><input type="text" id="t-teacher" class="w-full glass-input rounded-lg p-2.5 text-white mt-1"></div><div><label class="text-xs text-slate-400 uppercase font-bold">Zoom Link</label><input type="url" id="t-link" class="w-full glass-input rounded-lg p-2.5 text-white mt-1"></div></div><div class="flex gap-3 mt-6"><button onclick="closeTutorModal()" class="flex-1 py-3 rounded-xl hover:bg-white/5 text-slate-300 transition-colors">Cancel</button><button id="tutor-save-btn" onclick="saveTutorClass()" class="flex-1 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-medium transition-colors">Save Class</button></div></div></div>
     <div id="exam-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center z-50 p-4"><div class="glass bg-slate-900 rounded-2xl p-6 w-full max-w-md shadow-2xl border border-slate-700 max-h-[80vh] flex flex-col"><h3 class="text-xl font-semibold mb-4 text-white flex items-center gap-2"><i class="ph ph-list-checks text-amber-400"></i> Manage Exams</h3><div class="flex-1 overflow-y-auto mb-4 pr-1"><label class="text-xs text-slate-400 uppercase font-bold mb-2 block">Current Countdown List</label><div id="modal-exam-list" class="space-y-2"></div></div><div class="border-t border-white/10 pt-4"><label class="text-xs text-slate-400 uppercase font-bold mb-2 block">Add New Exam</label><div class="space-y-3"><input type="text" id="exam-name-input" class="w-full glass-input rounded-lg p-3 text-white" placeholder="Exam Name"><input type="date" id="exam-date-input" class="w-full glass-input rounded-lg p-3 text-white [color-scheme:dark]"><p id="exam-error-msg" class="text-red-400 text-xs hidden"></p><div class="flex gap-3"><button onclick="document.getElementById('exam-modal').classList.add('hidden');document.getElementById('exam-modal').classList.remove('flex');" class="flex-1 py-3 rounded-xl hover:bg-white/5 text-slate-300 transition-colors">Close</button><button onclick="addExam()" class="flex-1 py-3 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-medium transition-colors">Add Exam</button></div></div></div></div></div>
@@ -337,6 +308,17 @@
                 <button onclick="closeAssessmentModal()" class="flex-1 py-3 rounded-xl hover:bg-white/5 text-slate-300 transition-colors">Cancel</button>
                 <button onclick="saveAssessment()" class="flex-1 py-3 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-medium transition-colors">Save Log</button>
             </div>
+        </div>
+    </div>
+
+    <!-- ASSESSMENT HISTORY MODAL -->
+    <div id="assessment-history-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="glass bg-slate-900 rounded-2xl p-6 w-full max-w-md shadow-2xl border border-slate-700 h-[70vh] flex flex-col">
+            <div class="flex justify-between items-center mb-4 border-b border-white/10 pb-4">
+                <h3 class="text-xl font-semibold text-white flex items-center gap-2"><i class="ph ph-clock-counter-clockwise text-slate-400"></i> Result History</h3>
+                <button onclick="closeAssessmentHistory()" class="text-slate-400 hover:text-white"><i class="ph ph-x text-xl"></i></button>
+            </div>
+            <div id="assessment-list" class="flex-1 overflow-y-auto space-y-2 pr-2"></div>
         </div>
     </div>
 
@@ -383,10 +365,13 @@
         
         // --- GLOBALS ---
         let homework=[], tutorClasses=[], igcseData=[], exams=[], links=[], personalTasks=[], assessments=[];
-        let editingId = null; 
+        let editingId = null; let assessmentEditingId = null;
         let timers={study:{},screen:{}};
         let performanceChart = null;
         let rewardSettings = { target: 90, bonus: 50 };
+        let currentIgcseId = null;
+        let currentLogClassId = null;
+        const k = (key) => `${currentUser}_esf-${key}`;
 
         // --- INIT ---
         async function init() {
@@ -420,7 +405,6 @@
         });
         async function completeLogin(user) { currentUser = user; document.getElementById('login-screen').classList.add('hidden'); document.getElementById('dashboard-view').classList.remove('hidden'); await loadAllData(); }
         function logout() { location.reload(); }
-        const k = (key) => `${currentUser}_esf-${key}`;
 
         // --- DATA LOAD ---
         async function loadAllData() {
@@ -443,246 +427,76 @@
         }
 
         // --- REWARDS SYSTEM ---
-        function openRewardsModal() { 
-            document.getElementById('rewards-modal').classList.remove('hidden'); 
-            document.getElementById('rewards-modal').classList.add('flex');
-            document.getElementById('reward-target').value = rewardSettings.target;
-            document.getElementById('reward-bonus').value = rewardSettings.bonus;
-            document.getElementById('reward-result').classList.add('hidden');
-        }
+        function openRewardsModal() { document.getElementById('rewards-modal').classList.remove('hidden'); document.getElementById('rewards-modal').classList.add('flex'); document.getElementById('reward-target').value = rewardSettings.target; document.getElementById('reward-bonus').value = rewardSettings.bonus; document.getElementById('reward-result').classList.add('hidden'); }
         function closeRewardsModal() { document.getElementById('rewards-modal').classList.add('hidden'); document.getElementById('rewards-modal').classList.remove('flex'); }
-        async function saveRewardSettings() {
-            const t = parseFloat(document.getElementById('reward-target').value);
-            const b = parseFloat(document.getElementById('reward-bonus').value);
-            if(!isNaN(t) && !isNaN(b)) {
-                rewardSettings = { target: t, bonus: b };
-                await db.set(k('rewardSettings'), rewardSettings);
-                alert("Settings Saved!");
-            }
+        async function saveRewardSettings() { const t = parseFloat(document.getElementById('reward-target').value); const b = parseFloat(document.getElementById('reward-bonus').value); if(!isNaN(t) && !isNaN(b)) { rewardSettings = { target: t, bonus: b }; await db.set(k('rewardSettings'), rewardSettings); alert("Settings Saved!"); } }
+        function runMonthlyReport() { let totalBonus = 0; let count = 0; assessments.forEach(a => { const percentage = (a.score / a.total) * 100; if (percentage >= rewardSettings.target) { totalBonus += rewardSettings.bonus; count++; } }); const div = document.getElementById('reward-result'); div.innerHTML = `<h4 class="text-slate-400 text-xs uppercase font-bold mb-2">Performance Summary</h4><div class="text-4xl font-bold text-yellow-400 mb-1">$${totalBonus}</div><p class="text-slate-300 text-sm">Earned from ${count} high distinctions.</p>`; div.classList.remove('hidden'); }
+        function openAssessmentModal(id=null) { 
+            document.getElementById('assessment-modal').classList.remove('hidden'); document.getElementById('assessment-modal').classList.add('flex'); 
+            if(id) { const a = assessments.find(x => x.id === id); document.getElementById('assess-subject').value = a.subject; document.getElementById('assess-type').value = a.type; document.getElementById('assess-title').value = a.title; document.getElementById('assess-score').value = a.score; document.getElementById('assess-total').value = a.total; document.getElementById('assess-date').value = a.date; assessmentEditingId = id; } else { assessmentEditingId = null; ['assess-subject','assess-title','assess-score','assess-total','assess-date'].forEach(f => document.getElementById(f).value = ''); }
         }
-        function runMonthlyReport() {
-            let totalBonus = 0;
-            let count = 0;
-            assessments.forEach(a => {
-                const percentage = (a.score / a.total) * 100;
-                if (percentage >= rewardSettings.target) {
-                    totalBonus += rewardSettings.bonus;
-                    count++;
-                }
-            });
-            const div = document.getElementById('reward-result');
-            div.innerHTML = `<h4 class="text-slate-400 text-xs uppercase font-bold mb-2">Performance Summary</h4><div class="text-4xl font-bold text-yellow-400 mb-1">$${totalBonus}</div><p class="text-slate-300 text-sm">Earned from ${count} high distinctions.</p>`;
-            div.classList.remove('hidden');
-        }
-
-        // --- PERFORMANCE CHART ---
-        function openAssessmentModal() { document.getElementById('assessment-modal').classList.remove('hidden'); document.getElementById('assessment-modal').classList.add('flex'); }
         function closeAssessmentModal() { document.getElementById('assessment-modal').classList.add('hidden'); document.getElementById('assessment-modal').classList.remove('flex'); }
-        async function saveAssessment() {
-            const sub = document.getElementById('assess-subject').value.trim();
-            const type = document.getElementById('assess-type').value;
-            const title = document.getElementById('assess-title').value.trim();
-            const score = parseFloat(document.getElementById('assess-score').value);
-            const total = parseFloat(document.getElementById('assess-total').value);
-            const date = document.getElementById('assess-date').value;
-
-            if(!sub || !title || isNaN(score) || isNaN(total) || !date) { alert("Please fill all fields."); return; }
-            
-            assessments.push({ id: Date.now(), subject: sub, type, title, score, total, date });
-            await db.set(k('assessments'), assessments);
-            
-            closeAssessmentModal();
-            ['assess-subject','assess-title','assess-score','assess-total','assess-date'].forEach(id => document.getElementById(id).value = '');
-            renderPerformanceChart();
-            updateLastSaved();
+        function openAssessmentHistory() { document.getElementById('assessment-history-modal').classList.remove('hidden'); document.getElementById('assessment-history-modal').classList.add('flex'); renderAssessmentHistory(); }
+        function closeAssessmentHistory() { document.getElementById('assessment-history-modal').classList.add('hidden'); document.getElementById('assessment-history-modal').classList.remove('flex'); }
+        function renderAssessmentHistory() {
+            const list = document.getElementById('assessment-list'); list.innerHTML = ''; if(assessments.length === 0) { list.innerHTML = '<div class="text-center text-slate-500 text-sm italic py-4">No results logged yet.</div>'; return; }
+            const sorted = [...assessments].sort((a,b) => new Date(b.date) - new Date(a.date));
+            sorted.forEach(a => {
+                const pct = ((a.score/a.total)*100).toFixed(1);
+                const div = document.createElement('div'); div.className = "bg-white/5 p-3 rounded-xl border border-white/10 flex justify-between items-center";
+                div.innerHTML = `<div><div class="flex items-center gap-2"><span class="font-bold text-slate-200 text-sm">${a.subject}</span><span class="text-[10px] text-cyan-300 bg-cyan-900/30 px-1.5 py-0.5 rounded">${a.type === 'School Assessment' ? 'School' : 'IGCSE'}</span></div><div class="text-xs text-slate-400 mt-0.5">${a.title} • ${new Date(a.date).toLocaleDateString('en-GB')}</div></div><div class="flex items-center gap-3"><span class="font-mono font-bold text-emerald-400 text-sm">${pct}%</span><div class="flex gap-1"><button onclick="openAssessmentModal(${a.id}); closeAssessmentHistory()" class="text-slate-400 hover:text-white p-1"><i class="ph ph-pencil"></i></button><button onclick="deleteAssessment(${a.id})" class="text-slate-400 hover:text-red-400 p-1"><i class="ph ph-trash"></i></button></div></div>`; list.appendChild(div);
+            });
         }
-
+        async function deleteAssessment(id) { if(confirm("Delete this record?")) { assessments = assessments.filter(a => a.id !== id); await db.set(k('assessments'), assessments); renderAssessmentHistory(); renderPerformanceChart(); updateLastSaved(); } }
+        async function saveAssessment() {
+            const sub = document.getElementById('assess-subject').value.trim(), type = document.getElementById('assess-type').value, title = document.getElementById('assess-title').value.trim(), score = parseFloat(document.getElementById('assess-score').value), total = parseFloat(document.getElementById('assess-total').value), date = document.getElementById('assess-date').value;
+            if(!sub || !title || isNaN(score) || isNaN(total) || !date) { alert("Please fill all fields."); return; }
+            if (assessmentEditingId) { const idx = assessments.findIndex(x => x.id === assessmentEditingId); if(idx !== -1) assessments[idx] = { id: assessmentEditingId, subject: sub, type, title, score, total, date }; } else { assessments.push({ id: Date.now(), subject: sub, type, title, score, total, date }); }
+            await db.set(k('assessments'), assessments); closeAssessmentModal(); renderPerformanceChart(); updateLastSaved();
+        }
         function renderPerformanceChart() {
-            const ctx = document.getElementById('performanceChart').getContext('2d');
-            if (performanceChart) performanceChart.destroy();
-            if (assessments.length === 0) return; 
-
+            const ctx = document.getElementById('performanceChart').getContext('2d'); if (performanceChart) performanceChart.destroy(); if (assessments.length === 0) return;
             const subjects = [...new Set(assessments.map(a => a.subject))];
             const datasets = subjects.map((subject, index) => {
-                // SORT BY DATE ASCENDING (Oldest -> Newest)
-                const subjectData = assessments
-                    .filter(a => a.subject === subject)
-                    .sort((a, b) => new Date(a.date) - new Date(b.date));
-
+                const subjectData = assessments.filter(a => a.subject === subject).sort((a, b) => new Date(a.date) - new Date(b.date));
                 const colors = ['#38bdf8', '#34d399', '#f472b6', '#a78bfa', '#fbbf24'];
-                const color = colors[index % colors.length];
-
-                return {
-                    label: subject,
-                    data: subjectData.map(a => ({ x: a.date, y: (a.score / a.total) * 100 })),
-                    borderColor: color, backgroundColor: color, tension: 0.3, pointRadius: 4
-                };
+                return { label: subject, data: subjectData.map(a => ({ x: a.date, y: (a.score / a.total) * 100 })), borderColor: colors[index % colors.length], backgroundColor: colors[index % colors.length], tension: 0.3, pointRadius: 4 };
             });
-
-            performanceChart = new Chart(ctx, {
-                type: 'line',
-                data: { datasets: datasets },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    scales: { y: { beginAtZero: true, max: 100, grid: { color: 'rgba(0, 0, 0, 0.1)' }, ticks: { color: '#475569' } }, x: { grid: { display: false }, ticks: { color: '#475569' } } },
-                    plugins: { legend: { labels: { color: '#1e293b' } }, tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}%` } } }
-                }
-            });
+            performanceChart = new Chart(ctx, { type: 'line', data: { datasets: datasets }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 100, grid: { color: 'rgba(0, 0, 0, 0.1)' }, ticks: { color: '#475569' } }, x: { grid: { display: false }, ticks: { color: '#475569' } } }, plugins: { legend: { labels: { color: '#1e293b' } }, tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}%` } } } } });
         }
-
-        // --- CORE FUNCS ---
-        window.updateFileName = function() {
-            const fileInput = document.getElementById('hw-file');
-            const display = document.getElementById('file-name-display');
-            if(fileInput.files.length > 0) { display.innerText = fileInput.files[0].name; display.classList.add('text-white'); } else { display.innerText = 'Select PDF or Image...'; }
-        };
-        
+        window.updateFileName = function() { const fileInput = document.getElementById('hw-file'); const display = document.getElementById('file-name-display'); if(fileInput.files.length > 0) { display.innerText = fileInput.files[0].name; display.classList.add('text-white'); } else { display.innerText = 'Select PDF or Image...'; } };
         async function updateLastSaved() { const t = new Date(); const str = t.toLocaleDateString('en-GB') + ' ' + t.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); try { await db.set(k('last-saved'), str); renderLastSaved(); } catch(e){} }
         async function renderLastSaved() { const saved = await db.get(k('last-saved')); if(saved) document.getElementById('last-saved').innerText = `Last Activity: ${saved}`; }
         function setQuote() { const quotes = ["Lock in.", "POV: You finished homework.", "Don't let the doomscrolling win.", "Bet you can't finish this task in 20 mins.", "Focus up.", "Academic comeback starts right now.", "Do it for the plot.", "Stop yapping, start typing.", "Imagine finishing early."]; document.getElementById('daily-quote').innerText = `"${quotes[Math.floor(Math.random() * quotes.length)]}"`; }
-        
-        // --- PERSONAL TASKS ---
-        async function addPersonalTask() {
-            const task = document.getElementById('personal-task-input').value.trim();
-            const date = document.getElementById('personal-task-date').value;
-            if(!task) return;
-            personalTasks.push({ id: Date.now(), text: task, dueDate: date, completed: false });
-            await db.set(k('personal'), personalTasks);
-            document.getElementById('personal-task-input').value = '';
-            renderPersonalTasks(); updateLastSaved();
-        }
+        async function addPersonalTask() { const task = document.getElementById('personal-task-input').value.trim(); const date = document.getElementById('personal-task-date').value; if(!task) return; personalTasks.push({ id: Date.now(), text: task, dueDate: date, completed: false }); await db.set(k('personal'), personalTasks); document.getElementById('personal-task-input').value = ''; renderPersonalTasks(); updateLastSaved(); }
         async function togglePersonalTask(id) { const t = personalTasks.find(x => x.id === id); if(t) { t.completed = !t.completed; await db.set(k('personal'), personalTasks); renderPersonalTasks(); updateLastSaved(); } }
         async function deletePersonalTask(id) { personalTasks = personalTasks.filter(x => x.id !== id); await db.set(k('personal'), personalTasks); renderPersonalTasks(); updateLastSaved(); }
-        function renderPersonalTasks() {
-            const list = document.getElementById('personal-task-list'); list.innerHTML = '';
-            personalTasks.forEach(t => {
-                const dateText = t.dueDate ? new Date(t.dueDate).toLocaleDateString('en-GB') : '';
-                const div = document.createElement('div');
-                div.className = `flex items-center justify-between p-2 rounded bg-white/5 border border-white/5 ${t.completed ? 'opacity-50' : ''}`;
-                div.innerHTML = `<div class="flex items-center gap-2"><button onclick="togglePersonalTask(${t.id})" class="text-slate-400 hover:text-purple-400"><i class="ph ${t.completed ? 'ph-check-square' : 'ph-square'} text-lg"></i></button><span class="${t.completed ? 'line-through text-slate-500' : 'text-white'} text-sm">${t.text}</span></div><div class="flex items-center gap-2"><span class="text-xs text-slate-400">${dateText}</span><button onclick="deletePersonalTask(${t.id})" class="text-slate-500 hover:text-red-400"><i class="ph ph-x"></i></button></div>`;
-                list.appendChild(div);
-            });
-        }
-
-        // --- HOMEWORK (FIXED) ---
-        async function addHomework(){ 
-            const s=document.getElementById('hw-subject').value.trim();
-            const d=document.getElementById('hw-desc').value.trim();
-            const dt=document.getElementById('hw-date').value; 
-            const p=document.getElementById('hw-priority').value;
-            const l=document.getElementById('hw-link').value.trim();
-            const r=document.getElementById('hw-remarks').value.trim();
-            const fi=document.getElementById('hw-file'); 
-            const err=document.getElementById('error-msg');
-            const load=document.getElementById('loading-msg'); 
-            err.classList.add('hidden'); 
-            if(!s||!d||!dt){ err.innerText="⚠️ Missing Subject, Desc or Date"; err.classList.remove('hidden'); return; } 
-            let fd=null, fn=null; 
-            if(editingId){ const ex=homework.find(h=>h.id===editingId); if(ex){fd=ex.fileData;fn=ex.fileName;} } 
-            if(fi.files.length>0){ 
-                if(fi.files[0].size>10000000){ err.innerText="⚠️ File > 10MB"; err.classList.remove('hidden'); return; } 
-                fn=fi.files[0].name; load.classList.remove('hidden'); 
-                try{ fd=await new Promise((rs,rj)=>{ const rd=new FileReader(); rd.onload=()=>rs(rd.result); rd.onerror=rj; rd.readAsDataURL(fi.files[0]); }); }catch(e){ } 
-                load.classList.add('hidden'); 
-            } 
-            const newEntry = {id:Date.now(),subject:s,desc:d,dueDate:dt,priority:p,link:l,remarks:r,fileName:fn,fileData:fd,completed:false};
-            const tempHomework = editingId ? homework.map(h=>h.id===editingId ? {...h,...newEntry, id:h.id} : h) : [...homework, newEntry];
-            await db.set(k('homework'), tempHomework);
-            homework = tempHomework;
-            if(editingId) cancelEdit(); else { document.getElementById('hw-subject').value='';document.getElementById('hw-desc').value='';document.getElementById('hw-remarks').value='';document.getElementById('hw-link').value='';document.getElementById('hw-file').value=''; }
-            renderAllTasks(); updateLastSaved(); 
-        }
-        function editHomework(id){ const t=homework.find(x=>x.id===id);if(!t)return; document.getElementById('hw-subject').value=t.subject;document.getElementById('hw-desc').value=t.desc;document.getElementById('hw-date').value=t.dueDate;document.getElementById('hw-priority').value=t.priority;document.getElementById('hw-link').value=t.link||'';document.getElementById('hw-remarks').value=t.remarks||''; editingId=id; document.getElementById('form-title').innerText="Editing";document.getElementById('cancel-edit-btn').classList.remove('hidden');document.getElementById('add-btn').innerText="Update";document.getElementById('add-btn').className=document.getElementById('add-btn').className.replace('bg-sky-600','bg-emerald-600'); document.getElementById('homework-form').scrollIntoView({behavior:'smooth'}); }
-        function cancelEdit(){ editingId=null;document.getElementById('hw-subject').value='';document.getElementById('hw-desc').value='';document.getElementById('hw-remarks').value='';document.getElementById('hw-link').value='';document.getElementById('hw-file').value='';document.getElementById('form-title').innerText="School New Assignment";document.getElementById('cancel-edit-btn').classList.add('hidden');document.getElementById('add-btn').innerText="Add Assignment";document.getElementById('add-btn').className=document.getElementById('add-btn').className.replace('bg-emerald-600','bg-sky-600'); }
-        function getTimeRemaining(d){const df=Date.parse(d)-Date.now();if(df<=0)return{t:"Due Today!",c:"text-red-600 font-bold"};const dy=Math.floor(df/86400000);return dy>0?{t:`Due ${dy} days`,c:"text-sky-600"}:{t:`Due Today`,c:"text-orange-400 font-bold"};}
-        async function deleteHomework(id){if(confirm('Delete?')){homework=homework.filter(h=>h.id!==id);if(editingId===id)cancelEdit(); await db.set(k('homework'), homework); renderAllTasks(); updateLastSaved();}}
-        async function toggleComplete(id) { 
-            // Check School Homework
-            const hIndex = homework.findIndex(h => h.id === id); 
-            if (hIndex !== -1) { 
-                homework[hIndex].completed = !homework[hIndex].completed; 
-                await db.set(k('homework'), homework); 
-            } else {
-                // Check Tutor Homework
-                let found = false;
-                for(let cls of tutorClasses) {
-                    if(cls.logs) {
-                        const lIndex = cls.logs.findIndex(l => l.id === id);
-                        if(lIndex !== -1) {
-                            cls.logs[lIndex].completed = !cls.logs[lIndex].completed;
-                            found = true;
-                            break;
-                        }
-                    }
-                }
-                if(found) await db.set(k('tutor'), tutorClasses);
-            }
-            renderAllTasks(); updateLastSaved(); 
-        }
+        function renderPersonalTasks() { const list = document.getElementById('personal-task-list'); list.innerHTML = ''; personalTasks.forEach(t => { const dateText = t.dueDate ? new Date(t.dueDate).toLocaleDateString('en-GB') : ''; const div = document.createElement('div'); div.className = `flex items-center justify-between p-2 rounded bg-white/5 border border-white/5 ${t.completed ? 'opacity-50' : ''}`; div.innerHTML = `<div class="flex items-center gap-2"><button onclick="togglePersonalTask(${t.id})" class="text-slate-400 hover:text-purple-400"><i class="ph ${t.completed ? 'ph-check-square' : 'ph-square'} text-lg"></i></button><span class="${t.completed ? 'line-through text-slate-500' : 'text-white'} text-sm">${t.text}</span></div><div class="flex items-center gap-2"><span class="text-xs text-slate-400">${dateText}</span><button onclick="deletePersonalTask(${t.id})" class="text-slate-500 hover:text-red-400"><i class="ph ph-x"></i></button></div>`; list.appendChild(div); }); }
+        function toggleLinkModal(){document.getElementById('link-modal').classList.toggle('hidden');document.getElementById('link-modal').classList.toggle('flex');}
+        async function addLink(){const t=document.getElementById('link-title').value;const u=document.getElementById('link-url').value;if(t&&u){links.push({title:t,url:u.startsWith('http')?u:'https://'+u});renderLinks();toggleLinkModal(); updateLastSaved(); await db.set(k('links'), links);}}
+        async function deleteLink(i){links.splice(i,1); await db.set(k('links'), links); renderLinks(); updateLastSaved();}
+        function saveLinks() { localStorage.setItem(k('links'), JSON.stringify(links)); }
+        function renderLinks(){ const c=document.getElementById('links-container');c.innerHTML=''; links.forEach((l,i)=>{ const d=document.createElement('div');d.className='group relative flex flex-col items-center justify-center p-3 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 cursor-pointer transition-all hover:scale-105'; d.onclick=(e)=>{if(!e.target.closest('.del-btn'))window.open(l.url,'_blank');}; d.innerHTML=`<button onclick="deleteLink(${i})" class="del-btn absolute top-1 right-1 opacity-0 group-hover:opacity-100 text-slate-400 hover:text-red-600"><i class="ph ph-x"></i></button><div class="w-8 h-8 rounded-full bg-sky-100 text-sky-600 flex items-center justify-center font-bold mb-1">${l.title[0]}</div><span class="text-xs text-slate-400 truncate w-full text-center">${l.title}</span>`; c.appendChild(d); }); }
+        function toggleTimer(type) { const t = timers[type]; if (!t.isRunning) { const otherType = type === 'study' ? 'screen' : 'study'; if (timers[otherType].isRunning) { const ot = timers[otherType]; ot.isRunning = false; ot.elapsedBefore += Date.now() - ot.startTime; ot.startTime = null; clearInterval(ot.interval); updateTimerUI(otherType, false); db.set(`${currentUser}_esf-timer-${otherType}`, ot); } } if (t.isRunning) { t.isRunning = false; t.elapsedBefore += Date.now() - t.startTime; t.startTime = null; clearInterval(t.interval); updateTimerUI(type, false); } else { t.isRunning = true; t.startTime = Date.now(); startTimerInterval(type); updateTimerUI(type, true); } db.set(`${currentUser}_esf-timer-${type}`, t); updateLastSaved(); }
+        function resetTimer(type) { const t = timers[type]; t.isRunning = false; t.startTime = null; t.elapsedBefore = 0; clearInterval(t.interval); updateTimerDisplay(type); updateTimerUI(type, false); db.set(`${currentUser}_esf-timer-${type}`, t); updateLastSaved(); }
+        function startTimerInterval(type) { clearInterval(timers[type].interval); timers[type].interval = setInterval(() => updateTimerDisplay(type), 1000); updateTimerUI(type, true); }
+        function updateTimerDisplay(type) { const t = timers[type]; let totalMs = t.elapsedBefore; if (t.isRunning) totalMs += (Date.now() - t.startTime); const totalSec = Math.floor(totalMs / 1000), h = Math.floor(totalSec / 3600).toString().padStart(2, '0'), m = Math.floor((totalSec % 3600) / 60).toString().padStart(2, '0'), s = (totalSec % 60).toString().padStart(2, '0'); document.getElementById(`${type}-display`).innerText = `${h}:${m}:${s}`; }
+        function updateTimerUI(type, isRunning) { const btn = document.getElementById(`${type}-btn`), icon = document.getElementById(`${type}-icon`); if (isRunning) { btn.classList.replace(type === 'study' ? 'bg-indigo-600' : 'bg-pink-600', 'bg-red-500'); btn.classList.replace(type === 'study' ? 'hover:bg-indigo-700' : 'hover:bg-pink-700', 'hover:bg-red-600'); icon.classList.replace('ph-play-fill', 'ph-pause-fill'); } else { btn.classList.replace('bg-red-500', type === 'study' ? 'bg-indigo-600' : 'bg-pink-600'); btn.classList.replace('hover:bg-red-600', type === 'study' ? 'hover:bg-indigo-700' : 'hover:bg-pink-700'); icon.classList.replace('ph-pause-fill', 'ph-play-fill'); } }
+        function saveTimer(type) { localStorage.setItem(`${currentUser}_esf-timer-${type}`, JSON.stringify({ isRunning: timers[type].isRunning, startTime: timers[type].startTime, elapsedBefore: timers[type].elapsedBefore })); updateLastSaved(); }
+        function openExamModal() { document.getElementById('exam-modal').classList.remove('hidden'); document.getElementById('exam-modal').classList.add('flex'); renderModalExamList(); }
+        function renderModalExamList() { const list = document.getElementById('modal-exam-list'); list.innerHTML = ''; if (exams.length === 0) { list.innerHTML = '<div class="text-slate-500 text-sm italic text-center">No exams added yet.</div>'; return; } exams.forEach((ex, index) => { const div = document.createElement('div'); div.className = "flex justify-between items-center bg-slate-100 p-3 rounded-lg border border-slate-200"; div.innerHTML = `<div><div class="text-slate-900 font-medium text-sm">${ex.name}</div><div class="text-xs text-slate-400">${new Date(ex.date).toLocaleDateString('en-GB')}</div></div><button onclick="deleteExam(${index})" class="text-slate-500 hover:text-red-600 p-1"><i class="ph ph-trash text-lg"></i></button>`; list.appendChild(div); }); }
+        async function addExam() { const name = document.getElementById('exam-name-input').value.trim(); const date = document.getElementById('exam-date-input').value; const err = document.getElementById('exam-error-msg'); if (name && date) { exams.push({ name, date }); await db.set(k('exam'), exams); renderExamCountdown(); updateLastSaved(); document.getElementById('exam-name-input').value = ''; document.getElementById('exam-date-input').value = ''; err.classList.add('hidden'); renderModalExamList(); } else { err.innerText = "Please fill in both fields."; err.classList.remove('hidden'); } }
+        async function deleteExam(index) { if(confirm("Remove?")) { exams.splice(index, 1); await db.set(k('exam'), exams); renderModalExamList(); renderExamCountdown(); updateLastSaved(); } }
+        function renderExamCountdown() { const container = document.getElementById('exam-list-container'); container.innerHTML = ''; if (exams.length === 0) { container.innerHTML = `<div class="flex items-center justify-between"><div><h2 class="text-2xl font-bold text-slate-900">No Exam Set</h2><p class="text-slate-400 text-sm mt-0.5">Set a date to start tracking</p></div></div>`; return; } exams.sort((a,b) => new Date(a.date) - new Date(b.date)); exams.forEach(ex => { const parts = ex.date.split('-'); const targetDate = new Date(parts[0], parts[1]-1, parts[2]); const today = new Date(); today.setHours(0,0,0,0); const diffTime = targetDate - today; const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); const daysText = diffDays < 0 ? "Done" : diffDays; const colorClass = diffDays <= 7 && diffDays >= 0 ? "text-red-600" : "text-white"; const div = document.createElement('div'); div.className = "flex items-center justify-between border-b border-white/10 last:border-0 pb-4 last:pb-0"; div.innerHTML = `<div><h2 class="text-xl font-bold text-slate-100">${ex.name}</h2><p class="text-slate-400 text-sm mt-0.5">${targetDate.toLocaleDateString('en-GB')}</p></div><div class="text-right"><div class="text-4xl font-mono ${colorClass} font-bold tracking-tight">${daysText}</div><div class="text-[10px] text-slate-500 uppercase tracking-wider font-bold mt-1">Days Left</div></div>`; container.appendChild(div); }); }
         
-        // --- UNIFIED RENDER: School + Tutor Tasks ---
-        function renderAllTasks(){ 
-            const list = document.getElementById('homework-list'); list.innerHTML=''; 
-            
-            // 1. Prepare School Tasks
-            const schoolTasks = homework.map(h => ({...h, type: 'school', sortDate: new Date(h.dueDate)}));
-            
-            // 2. Prepare Tutor Tasks
-            const tutorTasks = [];
-            tutorClasses.forEach(cls => {
-                if(cls.logs) {
-                    cls.logs.forEach(log => {
-                        if(log.hasHomework) {
-                            if(!log.id) log.id = Date.now() + Math.random();
-                            tutorTasks.push({
-                                id: log.id,
-                                subject: `Tutor: ${cls.subject}`,
-                                desc: log.text,
-                                dueDate: log.homeworkDueDate,
-                                priority: 'Medium',
-                                completed: log.completed || false,
-                                type: 'tutor',
-                                sortDate: new Date(log.homeworkDueDate || new Date())
-                            });
-                        }
-                    });
-                }
-            });
-
-            // 3. Merge & Sort
-            const allTasks = [...schoolTasks, ...tutorTasks].sort((a,b)=>{ 
-                if (a.completed !== b.completed) return a.completed - b.completed; 
-                return a.sortDate - b.sortDate;
-            });
-            
-            document.getElementById('task-count').innerText=`${allTasks.filter(h=>!h.completed).length} pending`; 
-            
-            if(allTasks.length===0){list.innerHTML='<div class="text-center text-slate-500 py-8 italic">No active assignments.</div>';return;} 
-            
-            allTasks.forEach(x=>{ 
-                const tm = getTimeRemaining(x.dueDate); 
-                const pc = x.completed ? 'priority-done task-done' : `priority-${x.priority.toLowerCase()}`; 
-                let btns=''; 
-                if(x.type === 'school') {
-                     if(x.link)btns+=`<a href="${x.link.startsWith('http')?x.link:'https://'+x.link}" target="_blank" class="mr-2 inline-flex items-center gap-1 bg-sky-100 text-sky-600 text-xs px-2 py-1 rounded"><i class="ph ph-link"></i> Link</a>`; 
-                     if(x.fileName&&x.fileData)btns+=`<a href="${x.fileData}" download="${x.fileName}" class="inline-flex items-center gap-1 bg-purple-100 text-purple-600 text-xs px-2 py-1 rounded"><i class="ph ph-file"></i> ${x.fileName}</a>`; 
-                }
-                const checkBtn = x.completed ? `<button onclick="toggleComplete(${x.id})" class="text-emerald-600 hover:text-emerald-700 p-1" title="Mark Incomplete"><i class="ph ph-check-circle-fill text-xl"></i></button>` : `<button onclick="toggleComplete(${x.id})" class="text-slate-500 hover:text-emerald-400 p-1" title="Mark Done"><i class="ph ph-circle text-xl"></i></button>`; 
-                let manageBtns = x.type === 'school' ? `<button onclick="editHomework(${x.id})" class="text-slate-400 hover:text-sky-600 p-1"><i class="ph ph-pencil-simple text-xl"></i></button><button onclick="deleteHomework(${x.id})" class="text-slate-500 hover:text-red-600 p-1"><i class="ph ph-trash text-xl"></i></button>` : `<span class="text-xs text-slate-400 italic">Manage in Tutor Schedule</span>`;
-                const d=document.createElement('div');d.className=`glass-panel p-4 rounded-xl relative ${pc} hover:bg-slate-100 transition-colors animate-fade-in`; 
-                d.innerHTML=`<div class="flex justify-between items-start"><div><span class="text-xs font-bold bg-white/50 px-2 py-0.5 rounded text-slate-600 uppercase mr-2">${x.subject}</span><span class="text-xs ${x.priority==='High'?'text-red-600':'text-slate-500'}">${x.priority}</span><h4 class="text-lg font-medium text-slate-900 mt-1">${x.desc}</h4></div><div class="text-right"><div class="text-sm ${x.completed?'text-emerald-600':tm.c}"><i class="ph ph-clock"></i> ${x.completed ? 'Done' : tm.t}</div><div class="text-xs text-slate-500 mt-1">${new Date(x.dueDate).toLocaleDateString('en-GB')}</div></div></div>${x.remarks?`<div class="mt-2 text-xs text-slate-400 italic border-l-2 border-slate-300 pl-2">"${x.remarks}"</div>`:''}<div class="mt-2">${btns}</div><div class="absolute bottom-4 right-4 flex gap-2 items-center">${checkBtn}${manageBtns}</div>`; 
-                list.appendChild(d); 
-            }); 
-            
-            // Update Progress Bar
-            const total = allTasks.length; 
-            const completed = allTasks.filter(h => h.completed).length; 
-            const percent = total === 0 ? 0 : Math.round((completed / total) * 100); 
-            document.getElementById('progress-bar').style.width = `${percent}%`; 
-            document.getElementById('progress-text').innerText = `${percent}%`; 
-        }
-
-        // --- TUTOR LOGIC ---
+        function renderIgcse() { const container = document.getElementById('igcse-container'); container.innerHTML = ''; if (igcseData.length === 0) { container.innerHTML = '<div class="text-center text-slate-500 text-sm italic py-4">No subjects added. Click + to start tracking!</div>'; return; } igcseData.forEach(item => { const div = document.createElement('div'); div.className = "bg-white/5 p-3 rounded-xl border border-white/10"; div.innerHTML = ` <div class="flex justify-between items-center mb-2"> <div class="flex items-center gap-2"> <span class="font-bold text-slate-200">${item.subject}</span> <button onclick="openIgcseTopicModal(${item.id})" class="text-slate-400 hover:text-emerald-400 transition-colors" title="Edit Topics"><i class="ph ph-list-dashes"></i></button> </div> <div class="flex items-center gap-2"> <span class="text-xs text-slate-400 font-mono progress-val">${item.progress}%</span> <button onclick="deleteIgcse(${item.id})" class="text-slate-500 hover:text-red-400 transition-colors"><i class="ph ph-x"></i></button> </div> </div> <div class="flex items-center gap-3"> <input type="range" min="0" max="100" value="${item.progress}" onchange="updateIgcse(${item.id}, this.value)" oninput="this.parentElement.previousElementSibling.querySelector('.progress-val').innerText = this.value + '%'" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-pink-500"> </div> `; container.appendChild(div); }); }
+        function addIgcseSubject() { document.getElementById('igcse-modal').classList.remove('hidden'); document.getElementById('igcse-modal').classList.add('flex'); document.getElementById('igcse-subject-input').value = ''; document.getElementById('igcse-subject-input').focus(); }
+        async function saveIgcseSubjectFromModal() { const sub = document.getElementById('igcse-subject-input').value.trim(); if(sub) { igcseData.push({ id: Date.now(), subject: sub, progress: 0, topics: "" }); await db.set(k('igcse'), igcseData); renderIgcse(); updateLastSaved(); } document.getElementById('igcse-modal').classList.add('hidden'); document.getElementById('igcse-modal').classList.remove('flex'); }
+        async function updateIgcse(id, val) { const idx = igcseData.findIndex(x => x.id === id); if(idx !== -1) { igcseData[idx].progress = val; await db.set(k('igcse'), igcseData); } }
+        async function deleteIgcse(id) { if(confirm("Remove?")) { igcseData = igcseData.filter(x => x.id !== id); await db.set(k('igcse'), igcseData); renderIgcse(); updateLastSaved(); } }
+        function openIgcseTopicModal(id) { currentIgcseId = id; const subject = igcseData.find(x => x.id === id); if(!subject) return; document.getElementById('igcse-topic-modal').classList.remove('hidden'); document.getElementById('igcse-topic-modal').classList.add('flex'); document.getElementById('igcse-topic-title').innerText = subject.subject; document.getElementById('igcse-topic-text').value = subject.topics || ""; }
+        function closeIgcseTopicModal() { document.getElementById('igcse-topic-modal').classList.add('hidden'); document.getElementById('igcse-topic-modal').classList.remove('flex'); currentIgcseId = null; }
+        async function saveIgcseTopics() { const txt = document.getElementById('igcse-topic-text').value; const idx = igcseData.findIndex(x => x.id === currentIgcseId); if(idx !== -1) { igcseData[idx].topics = txt; await db.set(k('igcse'), igcseData); updateLastSaved(); } closeIgcseTopicModal(); }
         function openTutorModal(id=null){ const m=document.getElementById('tutor-modal');m.classList.remove('hidden');m.classList.add('flex'); document.getElementById('tutor-error-msg').classList.add('hidden'); if(id){ const c=tutorClasses.find(x=>x.id===id);document.getElementById('tutor-modal-title').innerText="Edit Class";document.getElementById('tutor-save-btn').innerText="Update Class"; document.getElementById('t-day').value=c.day;document.getElementById('t-time').value=c.time; document.getElementById('t-subject').value=c.subject;document.getElementById('t-teacher').value=c.teacher; document.getElementById('t-link').value=c.link; editingTutorId=id; } else { document.getElementById('tutor-modal-title').innerText="Add Class";document.getElementById('tutor-save-btn').innerText="Save Class"; document.getElementById('t-day').value='Monday';document.getElementById('t-time').value=''; document.getElementById('t-subject').value='';document.getElementById('t-teacher').value=''; document.getElementById('t-link').value=''; editingTutorId=null; } }
         function closeTutorModal(){const m=document.getElementById('tutor-modal');m.classList.add('hidden');m.classList.remove('flex');}
         async function saveTutorClass(){ const d=document.getElementById('t-day').value,ti=document.getElementById('t-time').value,s=document.getElementById('t-subject').value,t=document.getElementById('t-teacher').value,l=document.getElementById('t-link').value; const err = document.getElementById('tutor-error-msg'); if(!s||!d){ err.innerText = "Please fill in at least Subject and Day."; err.classList.remove('hidden'); return; } if(editingTutorId){ const i=tutorClasses.findIndex(x=>x.id===editingTutorId); if(i!==-1) { const existingLogs = tutorClasses[i].logs || []; tutorClasses[i]={id:editingTutorId,day:d,time:ti,subject:s,teacher:t,link:l, logs: existingLogs}; } } else{ tutorClasses.push({id:Date.now(),day:d,time:ti,subject:s,teacher:t,link:l, logs: []}); } await db.set(k('tutor'),tutorClasses); renderTutorSchedule(); closeTutorModal(); updateLastSaved(); }
@@ -702,29 +516,15 @@
             const clsIndex = tutorClasses.findIndex(c => c.id === currentLogClassId); 
             if(clsIndex === -1) return; 
             if(!tutorClasses[clsIndex].logs) tutorClasses[clsIndex].logs = []; 
-            
-            // Add new log with ID for task tracking
-            tutorClasses[clsIndex].logs.unshift({ 
-                id: Date.now(), // Unique ID for check-off
-                date: new Date().toLocaleDateString('en-GB'), 
-                text: txt, 
-                hasHomework: hasHw, 
-                homeworkDueDate: hwDate,
-                completed: false
-            }); 
+            tutorClasses[clsIndex].logs.unshift({ date: new Date().toLocaleDateString('en-GB'), text: txt, hasHomework: hasHw, homeworkDueDate: hwDate, id: Date.now(), completed: false }); 
             await db.set(k('tutor'), tutorClasses); 
             renderLogEntries(tutorClasses[clsIndex].logs); 
             renderTutorSchedule(); 
-            renderAllTasks(); // Update main list
+            renderAllTasks(); 
             document.getElementById('log-viewer-input').value = ''; 
             updateLastSaved(); 
         }
-        function renderLogEntries(logs) { const container = document.getElementById('log-viewer-content'); container.innerHTML = ''; if(logs.length === 0) { container.innerHTML = '<div class="text-center text-slate-500 text-sm py-10 italic">No notes yet.</div>'; return; } logs.forEach(log => { 
-            let hwIcon = '';
-            if(log.hasHomework) {
-                hwIcon = `<div class="flex items-center gap-1 text-xs font-bold text-red-300 mt-1 bg-red-900/30 w-fit px-2 py-0.5 rounded"><i class="ph ph-warning-circle"></i> Homework Assigned</div>`;
-            }
-            const div = document.createElement('div'); div.className = "bg-white/5 p-3 rounded-xl border border-white/10"; div.innerHTML = `<div class="text-[10px] text-emerald-400 font-mono mb-1 uppercase tracking-wider flex justify-between"><span>${log.date}</span>${log.hasHomework ? '<i class="ph ph-book-open text-red-400"></i>' : ''}</div><div class="text-slate-200 text-sm whitespace-pre-wrap">${log.text}</div>${hwIcon}`; container.appendChild(div); }); }
+        function renderLogEntries(logs) { const container = document.getElementById('log-viewer-content'); container.innerHTML = ''; if(logs.length === 0) { container.innerHTML = '<div class="text-center text-slate-500 text-sm py-10 italic">No notes yet.</div>'; return; } logs.forEach(log => { let hwIcon = ''; if(log.hasHomework) { hwIcon = `<div class="flex items-center gap-1 text-xs font-bold text-red-300 mt-1 bg-red-900/30 w-fit px-2 py-0.5 rounded"><i class="ph ph-warning-circle"></i> Homework Assigned</div>`; } const div = document.createElement('div'); div.className = "bg-white/5 p-3 rounded-xl border border-white/10"; div.innerHTML = `<div class="text-[10px] text-emerald-400 font-mono mb-1 uppercase tracking-wider flex justify-between"><span>${log.date}</span>${log.hasHomework ? '<i class="ph ph-book-open text-red-400"></i>' : ''}</div><div class="text-slate-200 text-sm whitespace-pre-wrap">${log.text}</div>${hwIcon}`; container.appendChild(div); }); }
 
         // --- OTHER FUNCS ---
         function showCreateProfile() { document.getElementById('create-profile-modal').classList.remove('hidden'); document.getElementById('create-profile-modal').classList.add('flex'); document.getElementById('new-profile-name').value = ''; document.getElementById('new-profile-pin').value = ''; }
@@ -738,8 +538,8 @@
         async function deleteLink(i){links.splice(i,1); await db.set(k('links'), links); renderLinks(); updateLastSaved();}
         function saveLinks() { localStorage.setItem(k('links'), JSON.stringify(links)); }
         function renderLinks(){ const c=document.getElementById('links-container');c.innerHTML=''; links.forEach((l,i)=>{ const d=document.createElement('div');d.className='group relative flex flex-col items-center justify-center p-3 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 cursor-pointer transition-all hover:scale-105'; d.onclick=(e)=>{if(!e.target.closest('.del-btn'))window.open(l.url,'_blank');}; d.innerHTML=`<button onclick="deleteLink(${i})" class="del-btn absolute top-1 right-1 opacity-0 group-hover:opacity-100 text-slate-400 hover:text-red-600"><i class="ph ph-x"></i></button><div class="w-8 h-8 rounded-full bg-sky-100 text-sky-600 flex items-center justify-center font-bold mb-1">${l.title[0]}</div><span class="text-xs text-slate-400 truncate w-full text-center">${l.title}</span>`; c.appendChild(d); }); }
-        function toggleTimer(type) { const t = timers[type]; if (!t.isRunning) { const otherType = type === 'study' ? 'screen' : 'study'; if (timers[otherType].isRunning) { const ot = timers[otherType]; ot.isRunning = false; ot.elapsedBefore += Date.now() - ot.startTime; ot.startTime = null; clearInterval(ot.interval); updateTimerUI(otherType, false); db.set(`${currentUser}_esf-timer-${otherType}`, ot); } } if (t.isRunning) { t.isRunning = false; t.elapsedBefore += Date.now() - t.startTime; t.startTime = null; clearInterval(t.interval); updateTimerUI(type, false); } else { t.isRunning = true; t.startTime = Date.now(); startTimerInterval(type); updateTimerUI(type, true); } saveTimer(type); }
-        function resetTimer(type) { const t = timers[type]; t.isRunning = false; t.startTime = null; t.elapsedBefore = 0; clearInterval(t.interval); updateTimerDisplay(type); updateTimerUI(type, false); saveTimer(type); }
+        function toggleTimer(type) { const t = timers[type]; if (!t.isRunning) { const otherType = type === 'study' ? 'screen' : 'study'; if (timers[otherType].isRunning) { const ot = timers[otherType]; ot.isRunning = false; ot.elapsedBefore += Date.now() - ot.startTime; ot.startTime = null; clearInterval(ot.interval); updateTimerUI(otherType, false); db.set(`${currentUser}_esf-timer-${otherType}`, ot); } } if (t.isRunning) { t.isRunning = false; t.elapsedBefore += Date.now() - t.startTime; t.startTime = null; clearInterval(t.interval); updateTimerUI(type, false); } else { t.isRunning = true; t.startTime = Date.now(); startTimerInterval(type); updateTimerUI(type, true); } db.set(`${currentUser}_esf-timer-${type}`, t); updateLastSaved(); }
+        function resetTimer(type) { const t = timers[type]; t.isRunning = false; t.startTime = null; t.elapsedBefore = 0; clearInterval(t.interval); updateTimerDisplay(type); updateTimerUI(type, false); db.set(`${currentUser}_esf-timer-${type}`, t); updateLastSaved(); }
         function startTimerInterval(type) { clearInterval(timers[type].interval); timers[type].interval = setInterval(() => updateTimerDisplay(type), 1000); updateTimerUI(type, true); }
         function updateTimerDisplay(type) { const t = timers[type]; let totalMs = t.elapsedBefore; if (t.isRunning) totalMs += (Date.now() - t.startTime); const totalSec = Math.floor(totalMs / 1000), h = Math.floor(totalSec / 3600).toString().padStart(2, '0'), m = Math.floor((totalSec % 3600) / 60).toString().padStart(2, '0'), s = (totalSec % 60).toString().padStart(2, '0'); document.getElementById(`${type}-display`).innerText = `${h}:${m}:${s}`; }
         function updateTimerUI(type, isRunning) { const btn = document.getElementById(`${type}-btn`), icon = document.getElementById(`${type}-icon`); if (isRunning) { btn.classList.replace(type === 'study' ? 'bg-indigo-600' : 'bg-pink-600', 'bg-red-500'); btn.classList.replace(type === 'study' ? 'hover:bg-indigo-700' : 'hover:bg-pink-700', 'hover:bg-red-600'); icon.classList.replace('ph-play-fill', 'ph-pause-fill'); } else { btn.classList.replace('bg-red-500', type === 'study' ? 'bg-indigo-600' : 'bg-pink-600'); btn.classList.replace('hover:bg-red-600', type === 'study' ? 'hover:bg-indigo-700' : 'hover:bg-pink-700'); icon.classList.replace('ph-pause-fill', 'ph-play-fill'); } }
@@ -749,15 +549,6 @@
         async function addExam() { const name = document.getElementById('exam-name-input').value.trim(); const date = document.getElementById('exam-date-input').value; const err = document.getElementById('exam-error-msg'); if (name && date) { exams.push({ name, date }); await db.set(k('exam'), exams); renderExamCountdown(); updateLastSaved(); document.getElementById('exam-name-input').value = ''; document.getElementById('exam-date-input').value = ''; err.classList.add('hidden'); renderModalExamList(); } else { err.innerText = "Please fill in both fields."; err.classList.remove('hidden'); } }
         async function deleteExam(index) { if(confirm("Remove?")) { exams.splice(index, 1); await db.set(k('exam'), exams); renderModalExamList(); renderExamCountdown(); updateLastSaved(); } }
         function renderExamCountdown() { const container = document.getElementById('exam-list-container'); container.innerHTML = ''; if (exams.length === 0) { container.innerHTML = `<div class="flex items-center justify-between"><div><h2 class="text-2xl font-bold text-slate-900">No Exam Set</h2><p class="text-slate-400 text-sm mt-0.5">Set a date to start tracking</p></div></div>`; return; } exams.sort((a,b) => new Date(a.date) - new Date(b.date)); exams.forEach(ex => { const parts = ex.date.split('-'); const targetDate = new Date(parts[0], parts[1]-1, parts[2]); const today = new Date(); today.setHours(0,0,0,0); const diffTime = targetDate - today; const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); const daysText = diffDays < 0 ? "Done" : diffDays; const colorClass = diffDays <= 7 && diffDays >= 0 ? "text-red-600" : "text-white"; const div = document.createElement('div'); div.className = "flex items-center justify-between border-b border-white/10 last:border-0 pb-4 last:pb-0"; div.innerHTML = `<div><h2 class="text-xl font-bold text-slate-100">${ex.name}</h2><p class="text-slate-400 text-sm mt-0.5">${targetDate.toLocaleDateString('en-GB')}</p></div><div class="text-right"><div class="text-4xl font-mono ${colorClass} font-bold tracking-tight">${daysText}</div><div class="text-[10px] text-slate-500 uppercase tracking-wider font-bold mt-1">Days Left</div></div>`; container.appendChild(div); }); }
-        let currentIgcseId = null;
-        function renderIgcse() { const container = document.getElementById('igcse-container'); container.innerHTML = ''; if (igcseData.length === 0) { container.innerHTML = '<div class="text-center text-slate-500 text-sm italic py-4">No subjects added. Click + to start tracking!</div>'; return; } igcseData.forEach(item => { const div = document.createElement('div'); div.className = "bg-white/5 p-3 rounded-xl border border-white/10"; div.innerHTML = ` <div class="flex justify-between items-center mb-2"> <div class="flex items-center gap-2"> <span class="font-bold text-slate-200">${item.subject}</span> <button onclick="openIgcseTopicModal(${item.id})" class="text-slate-400 hover:text-emerald-400 transition-colors" title="Edit Topics"><i class="ph ph-list-dashes"></i></button> </div> <div class="flex items-center gap-2"> <span class="text-xs text-slate-400 font-mono progress-val">${item.progress}%</span> <button onclick="deleteIgcse(${item.id})" class="text-slate-500 hover:text-red-400 transition-colors"><i class="ph ph-x"></i></button> </div> </div> <div class="flex items-center gap-3"> <input type="range" min="0" max="100" value="${item.progress}" onchange="updateIgcse(${item.id}, this.value)" oninput="this.parentElement.previousElementSibling.querySelector('.progress-val').innerText = this.value + '%'" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-pink-500"> </div> `; container.appendChild(div); }); }
-        function addIgcseSubject() { document.getElementById('igcse-modal').classList.remove('hidden'); document.getElementById('igcse-modal').classList.add('flex'); document.getElementById('igcse-subject-input').value = ''; document.getElementById('igcse-subject-input').focus(); }
-        async function saveIgcseSubjectFromModal() { const sub = document.getElementById('igcse-subject-input').value.trim(); if(sub) { igcseData.push({ id: Date.now(), subject: sub, progress: 0, topics: "" }); await db.set(k('igcse'), igcseData); renderIgcse(); updateLastSaved(); } document.getElementById('igcse-modal').classList.add('hidden'); document.getElementById('igcse-modal').classList.remove('flex'); }
-        async function updateIgcse(id, val) { const idx = igcseData.findIndex(x => x.id === id); if(idx !== -1) { igcseData[idx].progress = val; await db.set(k('igcse'), igcseData); } }
-        async function deleteIgcse(id) { if(confirm("Remove?")) { igcseData = igcseData.filter(x => x.id !== id); await db.set(k('igcse'), igcseData); renderIgcse(); updateLastSaved(); } }
-        function openIgcseTopicModal(id) { currentIgcseId = id; const subject = igcseData.find(x => x.id === id); if(!subject) return; document.getElementById('igcse-topic-modal').classList.remove('hidden'); document.getElementById('igcse-topic-modal').classList.add('flex'); document.getElementById('igcse-topic-title').innerText = subject.subject; document.getElementById('igcse-topic-text').value = subject.topics || ""; }
-        function closeIgcseTopicModal() { document.getElementById('igcse-topic-modal').classList.add('hidden'); document.getElementById('igcse-topic-modal').classList.remove('flex'); currentIgcseId = null; }
-        async function saveIgcseTopics() { const txt = document.getElementById('igcse-topic-text').value; const idx = igcseData.findIndex(x => x.id === currentIgcseId); if(idx !== -1) { igcseData[idx].topics = txt; await db.set(k('igcse'), igcseData); updateLastSaved(); } closeIgcseTopicModal(); }
         
         init();
     </script>
